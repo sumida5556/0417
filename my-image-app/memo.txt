@@ -1,0 +1,146 @@
+1. 現在のプロジェクトをGitHubに保存
+bashcd /workspaces/0417/my-image-app
+
+# .gitignoreに追加（機密情報を除外）
+cat >> .gitignore << 'EOF'
+.env
+.env.local
+.vercel
+EOF
+
+# Gitコミット
+git add .
+git commit -m "完成版: 画像アップロードアプリ"
+git push origin main
+
+2. 環境再現用のREADME
+プロジェクトルートに README.md を作成します：
+bashcat > README.md << 'EOF'
+# 画像アップロードアプリ
+
+Next.js + Vercel Blob + Neon PostgreSQL を使った画像アップロードアプリケーション
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 16.2.4 (App Router), React, Tailwind CSS
+- **バックエンド**: Next.js API Routes
+- **データベース**: Neon PostgreSQL
+- **ORM**: Prisma 5.22.0
+- **ストレージ**: Vercel Blob
+- **デプロイ**: Vercel
+
+## セットアップ手順
+
+### 1. リポジトリのクローン
+
+```bash
+git clone <your-repo-url>
+cd my-image-app
+```
+
+### 2. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 3. 環境変数の設定
+
+`.env` ファイルを作成：
+
+```env
+DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
+```
+
+**DATABASE_URLの取得方法:**
+1. [neon.tech](https://neon.tech) でアカウント作成
+2. 新規プロジェクト作成
+3. Connection String をコピー
+
+### 4. データベースのマイグレーション
+
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
+```
+
+### 5. ローカル開発サーバーの起動
+
+```bash
+npm run dev
+```
+
+http://localhost:3000 でアクセス
+
+### 6. Vercelへのデプロイ
+
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+**デプロイ後の設定:**
+
+1. **Vercel Blob ストレージの作成**
+   - Vercel Dashboard → Storage → Create Database → Blob
+   - プロジェクトに接続
+
+2. **環境変数の設定**
+   - Settings → Environment Variables
+   - `DATABASE_URL` を追加（Production, Preview, Development）
+   - `BLOB_READ_WRITE_TOKEN` は自動設定される
+
+3. **再デプロイ**
+   - Deployments → 最新のデプロイ → Redeploy
+
+## ファイル構成
+my-image-app/
+├── app/
+│   ├── api/
+│   │   ├── images/route.ts      # 画像一覧取得API
+│   │   └── upload/route.ts      # 画像アップロードAPI
+│   ├── layout.tsx
+│   └── page.tsx                 # メインページ
+├── components/
+│   ├── ImageGrid.tsx            # 画像グリッド表示
+│   └── UploadForm.tsx           # アップロードフォーム
+├── lib/
+│   └── prisma.ts                # Prismaクライアント
+├── prisma/
+│   └── schema.prisma            # DBスキーマ定義
+├── .env                         # 環境変数（gitignore済み）
+└── package.json
+
+## 主要な機能
+
+- ✅ 画像のアップロード
+- ✅ アップロード済み画像の一覧表示
+- ✅ レスポンシブデザイン
+- ✅ サーバーレスAPI
+
+## トラブルシューティング
+
+### ビルドエラー
+
+```bash
+rm -rf .next
+npx prisma generate
+npm run build
+```
+
+### 環境変数が反映されない
+
+Vercelで環境変数変更後は必ず再デプロイが必要です。
+
+### Prismaエラー
+
+```bash
+npx prisma migrate reset
+npx prisma migrate dev
+```
+
+## ライセンス
+
+MIT
+EOF

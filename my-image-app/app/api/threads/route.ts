@@ -10,20 +10,23 @@ export async function GET() {
           images: true,
         },
       },
+      _count: {
+        select: { photoFrames: true },
+      },
     },
   })
   return NextResponse.json(threads)
 }
 
 export async function POST(request: Request) {
-  const { title } = await request.json()
+  const { title, type = 'board' } = await request.json()
 
   if (!title) {
     return NextResponse.json({ error: 'タイトルが必要です' }, { status: 400 })
   }
 
   const thread = await prisma.thread.create({
-    data: { title },
+    data: { title, type },
   })
 
   return NextResponse.json(thread)

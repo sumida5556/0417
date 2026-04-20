@@ -10,9 +10,11 @@ datasource db {
 model Thread {
   id        String   @id @default(cuid())
   title     String
+  type      String   @default("board") // "board" or "submission"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]
+  photoFrames PhotoFrame[]
 }
 
 model Post {
@@ -32,4 +34,16 @@ model Image {
   url       String
   filename  String
   createdAt DateTime @default(now())
+}
+
+model PhotoFrame {
+  id              String   @id @default(cuid())
+  threadId        String
+  thread          Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  label           String   // 撮影必要場所（例：完全竣工写真）
+  sampleImageUrl  String?  // 見本写真のURL
+  attachedImageUrl String? // 添付された写真のURL
+  order           Int      // 表示順序
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

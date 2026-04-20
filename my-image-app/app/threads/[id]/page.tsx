@@ -19,6 +19,7 @@ type Post = {
 type Thread = {
   id: string
   title: string
+  type: string
   posts: Post[]
 }
 
@@ -39,6 +40,13 @@ export default function ThreadDetail({
   const fetchThread = async () => {
     const res = await fetch(`/api/threads/${id}`)
     const data = await res.json()
+    
+    // 写真提出表タイプの場合は専用ページにリダイレクト
+    if (data.type === 'submission') {
+      router.replace(`/threads/${id}/submission`)
+      return
+    }
+    
     setThread(data)
     setNewTitle(data.title)
   }
